@@ -7,20 +7,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # 使用内置完整Theos、多版本iOS SDK的镜像
+    container: ghcr.io/roothub-lab/theos:latest
     steps:
       - name: Clone source code
         uses: actions/checkout@v5
 
-      - name: Setup Theos
-        uses: Randomblock1/theos-action@v1
-        with:
-          sdks-repo: https://github.com/theos/sdks.git
-          sdks: iPhoneOS15.0.sdk
-
-      - name: Compile Tweak
+      - name: Compile rootless deb
         run: make package THEOS_PACKAGE_SCHEME=rootless
 
-      - name: Upload deb artifact
+      - name: Upload deb installer
         uses: actions/upload-artifact@v4
         with:
           name: RouteConfigurator-Deb
