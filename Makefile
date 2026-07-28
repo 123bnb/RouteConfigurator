@@ -8,7 +8,7 @@ PACKAGE_VERSION = 1.0.1-1
 
 include $(THEOS)/makefiles/common.mk
 
-TWEAK_NAME = RouteConfigurator
+TWEAK_NAME = routeconfigurator
 
 RouteConfigurator_FILES = Tweak.x
 RouteConfigurator_CFLAGS = -fobjc-arc
