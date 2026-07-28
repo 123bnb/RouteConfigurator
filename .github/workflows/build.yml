@@ -20,12 +20,12 @@ jobs:
           export THEOS=$HOME/theos
           echo "THEOS=$THEOS" >> $GITHUB_ENV
           echo "$THEOS/bin" >> $GITHUB_PATH
-          # 拉取theos主库
+          # 拉取theos主库含子模块
           git clone --recursive https://github.com/theos/theos.git $THEOS
-          # 手动下载ldid（apt没有，单独拉二进制）
-          wget https://github.com/ProcursusTeam/ldid/releases/latest/download/ldid-linux-x86_64 -O $THEOS/bin/ldid
+          # 固定可用ldid下载地址，修复404
+          wget https://github.com/ProcursusTeam/ldid/releases/download/v2.1.5-procursus7/ldid-linux-x86_64 -O $THEOS/bin/ldid
           chmod +x $THEOS/bin/ldid
-          # 拉取全套SDK
+          # 拉取完整SDK库
           git clone https://github.com/theos/sdks.git $THEOS/sdks
 
       - name: Build rootless deb
