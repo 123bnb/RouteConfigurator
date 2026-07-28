@@ -20,12 +20,19 @@ jobs:
           export THEOS=$HOME/theos
           echo "THEOS=$THEOS" >> $GITHUB_ENV
           echo "$THEOS/bin" >> $GITHUB_PATH
-          # 拉取完整theos含所有子模块
+          # 清理旧文件夹，防止冲突
+          rm -rf $THEOS
+          rm -rf $THEOS/sdks
+          # 拉取theos
           git clone --recursive https://github.com/theos/theos.git $THEOS
-          # 修复ldid 404，使用sbingner原版ldid
-          curl -L https://github.com/sbingner/ldid/releases/download/v2.1.2/ldid-linux-x86_64 -o $THEOS/bin/ldid
+          # 备用方案：用git获取ldid，绕过github下载超时/404
+          git clone https://github.com/sbingner/ldid.git /tmp/ldid
+          cd /tmp/ldid
+          git checkout v2.1.2
+          make linux
+          cp ldid $THEOS/bin/
           chmod +x $THEOS/bin/ldid
-          # 下载完整iOS SDK库
+          # 拉取SDK
           git clone https://github.com/theos/sdks.git $THEOS/sdks
 
       - name: Build rootless deb
