@@ -1,14 +1,32 @@
-name: Build Tweak
-on: push
+name: Build RouteConfigurator Tweak
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: Randomblock1/theos-action@v1
+      - name: Clone source code
+        uses: actions/checkout@v5
+
+      - name: Setup Theos
+        uses: Randomblock1/theos-action@v1
         with:
-          theos-sdks: https://github.com/theos/sdks
-      - run: make package THEOS_PACKAGE_SCHEME=rootless
-      - uses: actions/upload-artifact@v4
+          sdks-repo: https://github.com/theos/sdks.git
+          sdks-ref: master # 关键：拉取完整全部SDK
+
+      - name: Install rootless compile dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libroot-dev
+
+      - name: Compile Tweak
+        run: make clean && make package THEOS_PACKAGE_SCHEME=rootless
+
+      - name: Upload deb artifact
+        uses: actions/upload-artifact@v4
         with:
+          name: RouteConfigurator-Deb
           path: packages/*.deb
