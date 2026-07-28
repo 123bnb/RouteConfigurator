@@ -8,20 +8,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Clone source code
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
-      - name: Setup Theos
-        uses: Randomblock1/theos-action@v1
+      - name: Install Theos
+        uses: op3ns0urce/theos-setup-action@v1
         with:
-          sdks-repo: https://github.com/theos/sdks.git
-          sdks-ref: master
+          sdk: iPhoneOS16.0.sdk
 
-      # 删掉整段 sudo apt install libroot-dev，云端不需要！
-      - name: Compile Tweak
+      - name: Build Tweak
         run: make package THEOS_PACKAGE_SCHEME=rootless
 
-      - name: Upload deb artifact
+      - name: Upload deb
         uses: actions/upload-artifact@v4
         with:
           name: RouteConfigurator-Deb
