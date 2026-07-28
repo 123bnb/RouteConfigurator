@@ -19,7 +19,7 @@ jobs:
 
       # 删掉整段 sudo apt install libroot-dev，云端不需要！
       - name: Compile Tweak
-        run: make clean && make package THEOS_PACKAGE_SCHEME=rootless
+        run: make package THEOS_PACKAGE_SCHEME=rootless
 
       - name: Upload deb artifact
         uses: actions/upload-artifact@v4
