@@ -4,7 +4,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: Randomblock1/theos-action@v1
         with:
           theos-sdks: https://github.com/theos/sdks
