@@ -16,12 +16,11 @@ jobs:
           sudo apt update
           sudo apt install -y git make curl libxml2-dev zip unzip clang lld xz-utils
 
-      - name: 安装 Theos + Linux交叉编译工具链
+      - name: 一键安装完整Theos+Linux交叉工具链
         run: |
           export THEOS=$HOME/theos
-          git clone --recursive https://github.com/theos/theos.git $THEOS
-          cd $THEOS
-          ./bin/install-toolchain
+          rm -rf $THEOS
+          curl https://theos.dev/install | bash -s -- --linux
           echo "THEOS=$THEOS" >> $GITHUB_ENV
 
       - name: 下载官方 iPhoneOS15.6 SDK
