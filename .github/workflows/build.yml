@@ -12,9 +12,9 @@ jobs:
       - name: 拉取源码
         uses: actions/checkout@v4
 
-      - name: 安装系统依赖
+      - name: 安装系统依赖+ldid签名工具
         run: |
-          brew install make curl xz
+          brew install make curl xz ldid
 
       - name: 克隆Theos
         run: |
