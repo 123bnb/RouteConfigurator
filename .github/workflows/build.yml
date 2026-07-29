@@ -6,23 +6,27 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
-      - name: 拉取源码
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: 安装系统依赖
+      - name: Install system deps
         run: |
           sudo apt update
-          sudo apt install -y git make curl libxml2-dev zip unzip clang lld xz-utils
+          sudo apt install -y git make curl libxml2-dev zip unzip xz-utils
 
-      # 官方稳定Action，自动装好theos+linux交叉编译工具链，无404、无脚本报错
-      - name: Setup Theos Linux
-        uses: theos/setup-theos@v1
-        with:
-          platform: linux
+      # 固定克隆theos，改用新版工具链安装命令（之前脚本改名）
+      - name: Clone Theos & install Linux toolchain
+        run: |
+          export THEOS=$HOME/theos
+          rm -rf $THEOS
+          git clone --recursive https://github.com/theos/theos.git $THEOS
+          cd $THEOS
+          # 新版脚本文件名：install-linux-toolchain
+          ./bin/install-linux-toolchain
+          echo "THEOS=$THEOS" >> $GITHUB_ENV
 
-      - name: 下载 iPhoneOS15.6 SDK
+      - name: Download iPhoneOS15.6 SDK
         run: |
           export THEOS=$HOME/theos
           rm -rf $THEOS/sdks
@@ -31,13 +35,13 @@ jobs:
           tar -xf sdk.tar.xz -C $THEOS/sdks/
           rm -f sdk.tar.xz
 
-      - name: 编译 rootless 插件
+      - name: Build tweak
         run: |
           export THEOS=$HOME/theos
           make package NO_CLEAN=1
 
-      - name: 上传deb包
+      - name: Upload deb
         uses: actions/upload-artifact@v4
         with:
           path: ./packages/*.deb
-          name: RouteConfigurator-Rootless-Deb
+          name: RouteConfigurator-Deb
