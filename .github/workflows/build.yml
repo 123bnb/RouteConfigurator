@@ -2,7 +2,7 @@ name: Build RouteConfigurator Rootless Deb
 on:
   push:
     branches: [ main, master ]
-  workflow_dispatch: # 支持手动点击编译
+  workflow_dispatch:
 
 jobs:
   build:
@@ -22,20 +22,17 @@ jobs:
           git clone --recursive https://github.com/theos/theos.git $THEOS
           echo "THEOS=$THEOS" >> $GITHUB_ENV
 
-      - name: 下载通用iOS SDK（15/16通用，解决SDK不存在报错）
+      - name: 下载完整Theos SDK库（含iPhoneOS16.0）
         run: |
           export THEOS=$HOME/theos
-          curl -LO https://github.com/theos/sdks/archive/refs/heads/master.zip
-          unzip master.zip
-          rm -rf $THEOS/sdks
-          mv sdks-master $THEOS/sdks
+          git clone https://github.com/theos/sdks.git $THEOS/sdks
 
-      - name: 编译 rootless 插件（跳过 make clean，解决目录缺失报错）
+      - name: 编译 rootless 插件（跳过make clean）
         run: |
           export THEOS=$HOME/theos
           make package THEOS_PACKAGE_SCHEME=rootless NO_CLEAN=1
 
-      - name: 上传编译好的deb安装包
+      - name: 上传deb安装包
         uses: actions/upload-artifact@v4
         with:
           path: ./packages/*.deb
