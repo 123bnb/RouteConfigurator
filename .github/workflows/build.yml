@@ -1,45 +1,42 @@
-name: Build RouteConfigurator
+name: Build RouteConfigurator Rootless Deb
 on:
-  workflow_dispatch:
   push:
-    branches: main
+    branches: [ main, master ]
+  workflow_dispatch: # 支持手动点击编译
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - name: 拉取源码
+        uses: actions/checkout@v4
 
-      - name: Install basic build tools
+      - name: 安装编译依赖
         run: |
           sudo apt update
-          sudo apt install -y git make clang perl dpkg-dev
+          sudo apt install -y git make curl libxml2-dev zip unzip clang lld
 
-      - name: Setup Theos & SDK
+      - name: 安装 Theos 稳定版
         run: |
           export THEOS=$HOME/theos
-          echo "THEOS=$THEOS" >> $GITHUB_ENV
-          echo "$THEOS/bin" >> $GITHUB_PATH
-          # 清理旧文件夹，防止冲突
-          rm -rf $THEOS
-          rm -rf $THEOS/sdks
-          # 拉取theos
           git clone --recursive https://github.com/theos/theos.git $THEOS
-          # 备用方案：用git获取ldid，绕过github下载超时/404
-          git clone https://github.com/sbingner/ldid.git /tmp/ldid
-          cd /tmp/ldid
-          git checkout v2.1.2
-          make linux
-          cp ldid $THEOS/bin/
-          chmod +x $THEOS/bin/ldid
-          # 拉取SDK
-          git clone https://github.com/theos/sdks.git $THEOS/sdks
+          echo "THEOS=$THEOS" >> $GITHUB_ENV
 
-      - name: Build rootless deb
-        run: make package THEOS_PACKAGE_SCHEME=rootless
+      - name: 下载通用iOS SDK（15/16通用，解决SDK不存在报错）
+        run: |
+          export THEOS=$HOME/theos
+          curl -LO https://github.com/theos/sdks/archive/refs/heads/master.zip
+          unzip master.zip
+          rm -rf $THEOS/sdks
+          mv sdks-master $THEOS/sdks
 
-      - name: Upload deb artifact
+      - name: 编译 rootless 插件（跳过 make clean，解决目录缺失报错）
+        run: |
+          export THEOS=$HOME/theos
+          make package THEOS_PACKAGE_SCHEME=rootless NO_CLEAN=1
+
+      - name: 上传编译好的deb安装包
         uses: actions/upload-artifact@v4
         with:
-          name: RouteConfigurator-deb
-          path: packages/*.deb
+          path: ./packages/*.deb
+          name: RouteConfigurator-Rootless-Deb
