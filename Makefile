@@ -13,6 +13,4 @@ RouteConfigurator_FILES = Tweak.x
 RouteConfigurator_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/tweak.mk
-SUBPROJECTS += routeconfigurator
-SUBPROJECTS += routeconfiguratorcc
 include $(THEOS_MAKE_PATH)/aggregate.mk
