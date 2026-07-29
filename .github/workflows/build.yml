@@ -22,12 +22,14 @@ jobs:
           git clone --recursive https://github.com/theos/theos.git $THEOS
           echo "THEOS=$THEOS" >> $GITHUB_ENV
 
-      - name: 下载完整Theos SDK库（适配16.0命名）
+      - name: 单独下载 iPhoneOS16.0.sdk 无需完整仓库
         run: |
           export THEOS=$HOME/theos
           rm -rf $THEOS/sdks
-          git clone https://github.com/theos/sdks.git $THEOS/sdks
-          cp -r $THEOS/sdks/iPhoneOS16.sdk $THEOS/sdks/iPhoneOS16.0.sdk
+          mkdir -p $THEOS/sdks
+          curl -L -o 16.0.zip https://github.com/theos/sdks/raw/master/iPhoneOS16.0.sdk.zip
+          unzip -q 16.0.zip -d $THEOS/sdks/
+          rm -f 16.0.zip
 
       - name: 编译 rootless 插件（跳过make clean）
         run: |
