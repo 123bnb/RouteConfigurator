@@ -20,7 +20,10 @@ jobs:
         run: |
           export THEOS=$HOME/theos
           rm -rf $THEOS
-          curl https://theos.dev/install | bash -s -- --linux
+          curl -L https://raw.githubusercontent.com/theos/theos/master/install -o install.sh
+          chmod +x install.sh
+          bash install.sh --linux
+          rm -f install.sh
           echo "THEOS=$THEOS" >> $GITHUB_ENV
 
       - name: 下载官方 iPhoneOS15.6 SDK
