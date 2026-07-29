@@ -14,7 +14,7 @@ jobs:
       - name: 安装编译依赖
         run: |
           sudo apt update
-          sudo apt install -y git make curl libxml2-dev zip unzip clang lld
+          sudo apt install -y git make curl libxml2-dev zip unzip clang lld xz-utils
 
       - name: 安装 Theos 稳定版
         run: |
@@ -22,14 +22,15 @@ jobs:
           git clone --recursive https://github.com/theos/theos.git $THEOS
           echo "THEOS=$THEOS" >> $GITHUB_ENV
 
-      - name: 单独下载 iPhoneOS16.0.sdk 无需完整仓库
+      - name: 下载官方 iPhoneOS16.5 SDK tar包，兼容16.0
         run: |
           export THEOS=$HOME/theos
           rm -rf $THEOS/sdks
           mkdir -p $THEOS/sdks
-          curl -L -o 16.0.zip https://github.com/theos/sdks/raw/master/iPhoneOS16.0.sdk.zip
-          unzip -q 16.0.zip -d $THEOS/sdks/
-          rm -f 16.0.zip
+          curl -L -o sdk.tar.xz https://github.com/theos/sdks/releases/download/master-146e41f/iPhoneOS16.5.sdk.tar.xz
+          tar -xf sdk.tar.xz -C $THEOS/sdks/
+          rm -f sdk.tar.xz
+          cp -r $THEOS/sdks/iPhoneOS16.5.sdk $THEOS/sdks/iPhoneOS16.0.sdk
 
       - name: 编译 rootless 插件（跳过make clean）
         run: |
