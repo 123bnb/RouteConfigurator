@@ -11,7 +11,7 @@ jobs:
       - name: 拉取源码
         uses: actions/checkout@v4
 
-      - name: 安装系统依赖
+      - name: 安装编译依赖
         run: |
           sudo apt update
           sudo apt install -y git make curl libxml2-dev zip unzip clang lld xz-utils
@@ -24,7 +24,7 @@ jobs:
           ./bin/install-toolchain
           echo "THEOS=$THEOS" >> $GITHUB_ENV
 
-      - name: 下载 iPhoneOS15.6 SDK 兼容项目16.0配置
+      - name: 下载官方 iPhoneOS15.6 SDK
         run: |
           export THEOS=$HOME/theos
           rm -rf $THEOS/sdks
@@ -32,12 +32,11 @@ jobs:
           curl -L -o sdk.tar.xz https://github.com/theos/sdks/releases/download/master-146e41f/iPhoneOS15.6.sdk.tar.xz
           tar -xf sdk.tar.xz -C $THEOS/sdks/
           rm -f sdk.tar.xz
-          cp -r $THEOS/sdks/iPhoneOS15.6.sdk $THEOS/sdks/iPhoneOS16.0.sdk
 
       - name: 编译 rootless 插件（跳过make clean）
         run: |
           export THEOS=$HOME/theos
-          make package THEOS_PACKAGE_SCHEME=rootless NO_CLEAN=1
+          make package NO_CLEAN=1
 
       - name: 上传deb安装包
         uses: actions/upload-artifact@v4
