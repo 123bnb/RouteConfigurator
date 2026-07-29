@@ -1,8 +1,8 @@
+SDKVERSION = 16.0
 ARCHS = arm64 arm64e
 THEOS_PACKAGE_SCHEME = rootless
 THEOS_DEVICE_IP = localhost -p 2222
 INSTALL_TARGET_PROCESSES = SpringBoard
-TARGET = iphone:clang:15.0:15.0
 PREFIX = $(THEOS)/toolchain/Xcode11.xctoolchain/usr/bin/
 PACKAGE_VERSION = 1.0.1-1
 
