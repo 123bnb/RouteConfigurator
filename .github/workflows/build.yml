@@ -6,27 +6,24 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # 改用macOS运行器，自带Xcode编译环境，无需linux交叉工具链
+    runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: 拉取源码
+        uses: actions/checkout@v4
 
-      - name: Install system deps
+      - name: 安装系统依赖
         run: |
-          sudo apt update
-          sudo apt install -y git make curl libxml2-dev zip unzip xz-utils
+          brew install make curl xz
 
-      # 固定克隆theos，改用新版工具链安装命令（之前脚本改名）
-      - name: Clone Theos & install Linux toolchain
+      - name: 克隆Theos
         run: |
           export THEOS=$HOME/theos
           rm -rf $THEOS
           git clone --recursive https://github.com/theos/theos.git $THEOS
-          cd $THEOS
-          # 新版脚本文件名：install-linux-toolchain
-          ./bin/install-linux-toolchain
           echo "THEOS=$THEOS" >> $GITHUB_ENV
 
-      - name: Download iPhoneOS15.6 SDK
+      - name: 下载 iPhoneOS15.6 SDK
         run: |
           export THEOS=$HOME/theos
           rm -rf $THEOS/sdks
@@ -35,12 +32,12 @@ jobs:
           tar -xf sdk.tar.xz -C $THEOS/sdks/
           rm -f sdk.tar.xz
 
-      - name: Build tweak
+      - name: 编译 rootless 插件
         run: |
           export THEOS=$HOME/theos
           make package NO_CLEAN=1
 
-      - name: Upload deb
+      - name: 上传deb安装包
         uses: actions/upload-artifact@v4
         with:
           path: ./packages/*.deb
